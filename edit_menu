@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تعديل قائمة الأطباق</title>
+<style>
+body { font-family: Tahoma, Arial; background: #f3f3f3; margin: 0; padding: 20px; }
+h2 { color: #8b0000; }
+.container { display: flex; flex-wrap: wrap; gap: 20px; }
+.card {
+    background: #fff; border-radius: 12px; padding: 15px;
+    width: 200px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.card img { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; cursor: pointer; }
+input { width: 100%; margin: 5px 0; padding: 6px; border-radius: 5px; border: 1px solid #ccc; }
+button { width: 100%; padding: 8px; background: #8b0000; color: white; border: none; border-radius: 6px; cursor: pointer; }
+button:hover { background: #a00000; }
+</style>
+</head>
+<body>
+
+<h2>تعديل قائمة الأطباق</h2>
+<div class="container" id="menuContainer">
+    <!-- سيتم إضافة كل طبق هنا عبر JavaScript -->
+</div>
+
+<script>
+// بيانات افتراضية (يمكن تعديلها)
+let dishes = [
+    {id:1, name:"كسكسي", price:"700", image:"makla1.png"},
+    {id:2, name:"شخشوخة", price:"850", image:"makla2.png"},
+    {id:3, name:"طاجين زيتون", price:"600", image:"makla3.png"},
+];
+
+// تحميل أي تغييرات من localStorage
+dishes.forEach(dish => {
+    let saved = JSON.parse(localStorage.getItem('dish'+dish.id));
+    if(saved){ Object.assign(dish, saved); }
+});
+
+// قائمة الصور المتاحة
+const availableImages = ["makla1.png","makla2.png","makla3.png"];
+
+const container = document.getElementById('menuContainer');
+
+// إنشاء البطاقات
+dishes.forEach(dish => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const img = document.createElement('img');
+    img.src = dish.image;
+    img.onclick = () => selectImage(dish.id, img);
+    card.appendChild(img);
+
+    const nameInput = document.createElement('input');
+    nameInput.value = dish.name;
+    nameInput.placeholder = "اسم الطبق";
+    card.appendChild(nameInput);
+
+    const priceInput = document.createElement('input');
+    priceInput.value = dish.price;
+    priceInput.placeholder = "السعر";
+    card.appendChild(priceInput);
+
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = "حفظ التغييرات";
+    saveBtn.onclick = () => saveDish(dish.id, nameInput.value, priceInput.value, img.src);
+    card.appendChild(saveBtn);
+
+    container.appendChild(card);
+});
+
+// دالة اختيار صورة
+function selectImage(dishId, imgElement){
+    let nextIndex = (availableImages.indexOf(imgElement.src.split('/').pop()) + 1) % availableImages.length;
+    imgElement.src = availableImages[nextIndex];
+}
+
+// دالة حفظ التغييرات
+function saveDish(id, name, price, imgSrc){
+    let dishData = {name:name, price:price, image:imgSrc.split('/').pop()};
+    localStorage.setItem('dish'+id, JSON.stringify(dishData));
+    alert("✔ تم حفظ التغييرات للطبق");
+}
+</script>
+
+</body>
+</html>
