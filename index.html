@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>القائمة الرئيسية</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Tahoma;
+    background:#f2f2f2;
+}
+header{
+    background:#8b0000;
+    color:white;
+    text-align:center;
+    padding:20px;
+    font-size:22px;
+}
+.container{
+    padding:20px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
+.card{
+    background:white;
+    border-radius:15px;
+    padding:30px 10px;
+    text-align:center;
+    box-shadow:0 4px 8px rgba(0,0,0,0.2);
+    cursor:pointer;
+    transition:0.3s;
+}
+.card:hover{transform:scale(1.05);}
+.icon{font-size:40px;}
+.full{grid-column:span 2;}
+.order-btn{
+    grid-column: span 2;
+    padding:15px;
+    font-size:18px;
+    background:#28a745;
+    color:white;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    box-shadow:0 4px 8px rgba(0,0,0,0.2);
+    transition:0.3s;
+}
+.order-btn:hover{background:#218838;}
+
+@media(max-width:480px){
+    .container{grid-template-columns:1fr;}
+    .full,.order-btn{grid-column:span 1;}
+}
+
+/* نافذة عرض الطلبات */
+#orderListModal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background: rgba(0,0,0,0.8);
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+}
+#orderListContent{
+    background:#fff;
+    padding:20px;
+    width:90%;
+    max-width:400px;
+    border-radius:10px;
+    text-align:right;
+    position:relative;
+}
+.close{
+    position:absolute;
+    top:10px;
+    left:10px;
+    font-size:24px;
+    cursor:pointer;
+    color:#8b0000;
+}
+.order-item{
+    margin:8px 0;
+    font-size:16px;
+    border-bottom:1px solid #ccc;
+    padding-bottom:4px;
+}
+.clear-btn{
+    margin-top:10px;
+    padding:10px;
+    width:100%;
+    font-size:16px;
+    background:#dc3545;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.3s;
+}
+.clear-btn:hover{background:#c82333;}
+</style>
+</head>
+
+<body>
+
+<header>🍽️ قائمة الطعام</header>
+
+<div class="container">
+    <div class="card" onclick="location.href='soup.html'">
+        <div class="icon">🍲</div><h3>حساء</h3>
+    </div>
+    <div class="card" onclick="location.href='dishes.html'">
+        <div class="icon">🍽️</div><h3>أطباق</h3>
+    </div>
+    <div class="card" onclick="location.href='salads.html'">
+        <div class="icon">🥗</div><h3>سلطات</h3>
+    </div>
+    <div class="card" onclick="location.href='snacks.html'">
+        <div class="icon">🥨</div><h3>مملحات</h3>
+    </div>
+    <div class="card full" onclick="location.href='drinks.html'">
+        <div class="icon">🥤</div><h3>مشروبات</h3>
+    </div>
+    <button class="order-btn" onclick="showOrders()">📋 عرض الطلبات المؤكدة</button>
+</div>
+
+<div id="orderListModal">
+    <div id="orderListContent">
+        <span class="close" onclick="closeOrders()">✖</span>
+        <h2>الطلبات المؤكدة</h2>
+        <div id="orderItems"></div>
+        <button class="clear-btn" onclick="clearOrders()">🗑️ مسح جميع الطلبات</button>
+    </div>
+</div>
+
+<script>
+function getOrders(){return JSON.parse(localStorage.getItem('confirmedOrders')||'[]');}
+function saveOrders(orders){localStorage.setItem('confirmedOrders',JSON.stringify(orders));}
+
+function showOrders(){
+    const modal=document.getElementById("orderListModal");
+    const container=document.getElementById("orderItems");
+    container.innerHTML="";
+    const orders=getOrders();
+    if(orders.length===0){container.innerHTML="<p>لا توجد طلبات مؤكدة بعد</p>";}
+    else{
+        orders.forEach(item=>{
+            const div=document.createElement("div");
+            div.className="order-item"; 
+            div.textContent=item;
+            container.appendChild(div);
+        });
+    }
+    modal.style.display="flex";
+}
+
+function closeOrders(){document.getElementById("orderListModal").style.display="none";}
+
+function clearOrders(){
+    if(confirm("هل أنت متأكد من مسح جميع الطلبات؟")){
+        localStorage.removeItem('confirmedOrders');
+        showOrders(); // لتحديث العرض بعد المسح
+    }
+}
+</script>
+
+</body>
+</html>

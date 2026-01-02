@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>طلبات الزبائن</title>
+<style>
+body {
+    margin: 0;
+    font-family: Tahoma, Arial;
+    background: #f3f3f3;
+}
+
+header {
+    background: #8b0000;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 22px;
+    position: relative;
+}
+
+/* زر الرجوع */
+.back-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: #ffffff;
+    color: #8b0000;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+    transition: 0.2s;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
+
+.back-btn:hover {
+    background: #8b0000;
+    color: white;
+}
+
+.container {
+    padding: 15px;
+}
+
+.order-list {
+    list-style: none;
+    padding: 0;
+}
+
+.order-item {
+    background: #fff;
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.clear-btn {
+    margin-top: 15px;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #8b0000;
+    color: white;
+    transition: 0.3s;
+}
+
+.clear-btn:hover {
+    background: #28a745;
+}
+</style>
+</head>
+<body>
+
+<header>
+<button class="back-btn" onclick="goBack()">←</button>
+طلبات الزبائن
+</header>
+
+<div class="container">
+    <ul class="order-list" id="orderList">
+        <!-- الطلبات ستظهر هنا -->
+    </ul>
+    <button class="clear-btn" onclick="clearOrders()">مسح القائمة</button>
+</div>
+
+<script>
+// عرض الطلبات من localStorage
+function loadOrders() {
+    const orders = JSON.parse(localStorage.getItem('confirmedOrders') || '[]');
+    const list = document.getElementById('orderList');
+    list.innerHTML = '';
+
+    if (orders.length === 0) {
+        list.innerHTML = '<li>لا توجد طلبات حالياً.</li>';
+        return;
+    }
+
+    orders.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'order-item';
+        li.textContent = item;
+        list.appendChild(li);
+    });
+}
+
+// مسح جميع الطلبات
+function clearOrders() {
+    if(confirm('هل تريد مسح جميع الطلبات؟')) {
+        localStorage.removeItem('confirmedOrders');
+        loadOrders();
+    }
+}
+
+// زر الرجوع
+function goBack() {
+    window.history.back();
+}
+
+// تحميل الطلبات عند فتح الصفحة
+loadOrders();
+</script>
+
+</body>
+</html>
