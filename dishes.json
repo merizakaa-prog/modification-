@@ -1,0 +1,14 @@
+[
+  {"id":1,"name":"كسكسي","price":700,"image":"makla1.png"},
+  {"id":2,"name":"شخشوخة","price":850,"image":"makla2.png"},
+  {"id":3,"name":"طاجين زيتون","price":600,"image":"makla3.png"},
+  {"id":4,"name":"دوبارة","price":500,"image":"makla1.png"},
+  {"id":5,"name":"شوربة فريك","price":400,"image":"makla2.png"},
+  {"id":6,"name":"طاجين لحم","price":900,"image":"makla3.png"},
+  {"id":7,"name":"رز بالدجاج","price":650,"image":"makla1.png"},
+  {"id":8,"name":"معكرونة","price":550,"image":"makla2.png"},
+  {"id":9,"name":"طاجين بطاطا","price":500,"image":"makla3.png"},
+  {"id":10,"name":"كسكسي خضر","price":600,"image":"makla1.png"},
+  {"id":11,"name":"شخشوخة لحم","price":900,"image":"makla2.png"},
+  {"id":12,"name":"طاجين دجاج","price":750,"image":"makla3.png"}
+]
