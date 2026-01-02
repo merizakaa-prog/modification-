@@ -18,7 +18,7 @@ button{padding:8px;background:#8b0000;color:#fff;border:none;border-radius:6px;w
 <div id="panel"></div>
 
 <script>
-const images=["makla1.png","makla2.png","makla3.png"];
+const images = ["makla1.png","makla2.png","makla3.png"];
 
 const defaultDishes = [
  {id:1,name:"كسكسي",price:700,image:"makla1.png"},
@@ -42,6 +42,8 @@ if(!localStorage.getItem("dishes")){
 let dishes = JSON.parse(localStorage.getItem("dishes"));
 const panel = document.getElementById("panel");
 
+panel.innerHTML = "";
+
 dishes.forEach((d,i)=>{
   const card=document.createElement("div");
   card.className="card";
@@ -64,7 +66,7 @@ dishes.forEach((d,i)=>{
   btn.textContent="حفظ";
   btn.onclick=()=>{
     dishes[i].name=name.value;
-    dishes[i].price=price.value;
+    dishes[i].price=parseInt(price.value);
     dishes[i].image=img.src.split("/").pop();
     localStorage.setItem("dishes",JSON.stringify(dishes));
     alert("تم الحفظ ✔");
