@@ -231,7 +231,6 @@ p {
 </div>
 
 <script>
-// بيانات افتراضية (تُنشأ أول مرة فقط)
 const defaultDishes = [
  {id:1,name:"كسكسي",price:700,image:"makla1.png",ing:"قمح، خضار، توابل",nut:"غني بالألياف"},
  {id:2,name:"شخشوخة",price:850,image:"makla2.png",ing:"سميد، لحم",nut:"غني بالبروتين"},
@@ -247,7 +246,6 @@ const defaultDishes = [
  {id:12,name:"طاجين دجاج",price:750,image:"makla3.png",ing:"دجاج، خضار",nut:"فيتامينات"}
 ];
 
-// إنشاء البيانات أول مرة
 if(!localStorage.getItem("dishes")){
     localStorage.setItem("dishes", JSON.stringify(defaultDishes));
 }
@@ -264,14 +262,12 @@ function loadDishes(){
              onclick="openModal('vi.mp4','${d.name}','${d.ing}','${d.nut}')">
             <h3>${d.name}</h3>
             <p>${d.price} دج</p>
-        </div>
-        `;
+        </div>`;
     });
 }
 
 loadDishes();
 
-// نافذة التفاصيل
 function openModal(videoSrc,name,ingredients,nutrition){
     document.getElementById('dishName').textContent=name;
     document.getElementById('ingredients').textContent=ingredients;
@@ -287,12 +283,11 @@ function closeModal(){
     document.getElementById('modal').style.display='none';
 }
 
-function confirmDish(){}
-
 function goHome(){
     window.location.href='index.html';
 }
 </script>
+
 
 
 </body>
