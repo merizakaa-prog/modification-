@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>إدارة الأطباق</title>
+<style>
+body{font-family:tahoma;background:#f3f3f3;padding:20px}
+.card{background:#fff;padding:15px;margin-bottom:15px;border-radius:10px}
+input{width:100%;padding:6px;margin:5px 0}
+img{width:80px;height:80px;border-radius:50%;cursor:pointer}
+button{padding:8px;background:#8b0000;color:#fff;border:none;border-radius:6px}
+</style>
+</head>
+<body>
+
+<h2>لوحة التحكم</h2>
+<div id="panel"></div>
+
+<script>
+const images=["makla1.png","makla2.png","makla3.png"];
+
+for(let i=1;i<=12;i++){
+ let data = JSON.parse(localStorage.getItem("dish"+i)) || {
+   name:"طبق "+i,
+   price:"0 دج",
+   image:images[0]
+ };
+
+ let div=document.createElement("div");
+ div.className="card";
+
+ let img=document.createElement("img");
+ img.src=data.image;
+ img.onclick=()=>{
+   let index=(images.indexOf(img.src.split("/").pop())+1)%images.length;
+   img.src=images[index];
+ };
+
+ let name=document.createElement("input");
+ name.value=data.name;
+
+ let price=document.createElement("input");
+ price.value=data.price;
+
+ let btn=document.createElement("button");
+ btn.textContent="حفظ";
+ btn.onclick=()=>{
+   localStorage.setItem("dish"+i,JSON.stringify({
+     name:name.value,
+     price:price.value,
+     image:img.src.split("/").pop()
+   }));
+   alert("تم الحفظ ✔");
+ };
+
+ div.append(img,name,price,btn);
+ document.getElementById("panel").appendChild(div);
+}
+</script>
+
+</body>
+</html>
