@@ -231,51 +231,69 @@ p {
 </div>
 
 <script>
-function openModal(videoSrc, name, ingredients, nutrition){
-    const modal=document.getElementById('modal');
-    const video=document.getElementById('videoPlayer');
+// بيانات افتراضية (تُنشأ أول مرة فقط)
+const defaultDishes = [
+ {id:1,name:"كسكسي",price:700,image:"makla1.png",ing:"قمح، خضار، توابل",nut:"غني بالألياف"},
+ {id:2,name:"شخشوخة",price:850,image:"makla2.png",ing:"سميد، لحم",nut:"غني بالبروتين"},
+ {id:3,name:"طاجين زيتون",price:600,image:"makla3.png",ing:"لحم، زيتون",nut:"فيتامينات"},
+ {id:4,name:"دوبارة",price:500,image:"makla1.png",ing:"لحم، طماطم",nut:"معادن"},
+ {id:5,name:"شوربة فريك",price:400,image:"makla2.png",ing:"فريك، دجاج",nut:"ألياف"},
+ {id:6,name:"طاجين لحم",price:900,image:"makla3.png",ing:"لحم، خضار",nut:"بروتين"},
+ {id:7,name:"رز بالدجاج",price:650,image:"makla1.png",ing:"رز، دجاج",nut:"طاقة"},
+ {id:8,name:"معكرونة",price:550,image:"makla2.png",ing:"معكرونة، جبن",nut:"كالسيوم"},
+ {id:9,name:"طاجين بطاطا",price:500,image:"makla3.png",ing:"بطاطا، لحم",nut:"فيتامينات"},
+ {id:10,name:"كسكسي خضر",price:600,image:"makla1.png",ing:"قمح، خضر",nut:"ألياف"},
+ {id:11,name:"شخشوخة لحم",price:900,image:"makla2.png",ing:"سميد، لحم",nut:"بروتين"},
+ {id:12,name:"طاجين دجاج",price:750,image:"makla3.png",ing:"دجاج، خضار",nut:"فيتامينات"}
+];
+
+// إنشاء البيانات أول مرة
+if(!localStorage.getItem("dishes")){
+    localStorage.setItem("dishes", JSON.stringify(defaultDishes));
+}
+
+function loadDishes(){
+    const dishes = JSON.parse(localStorage.getItem("dishes"));
+    const grid = document.getElementById("dishesGrid");
+    grid.innerHTML = "";
+
+    dishes.forEach(d => {
+        grid.innerHTML += `
+        <div class="item">
+            <img src="${d.image}" class="icon"
+             onclick="openModal('vi.mp4','${d.name}','${d.ing}','${d.nut}')">
+            <h3>${d.name}</h3>
+            <p>${d.price} دج</p>
+        </div>
+        `;
+    });
+}
+
+loadDishes();
+
+// نافذة التفاصيل
+function openModal(videoSrc,name,ingredients,nutrition){
     document.getElementById('dishName').textContent=name;
     document.getElementById('ingredients').textContent=ingredients;
     document.getElementById('nutrition').textContent=nutrition;
-
+    const video=document.getElementById('videoPlayer');
     video.src=videoSrc;
-    video.load();
     video.play();
-    modal.style.display='flex';
-
-    const orders=JSON.parse(localStorage.getItem('confirmedOrders')||'[]');
-    const btn=document.getElementById('confirmBtn');
-    btn.classList.toggle('confirmed', orders.includes(name));
+    document.getElementById('modal').style.display='flex';
 }
 
 function closeModal(){
-    const modal=document.getElementById('modal');
-    const video=document.getElementById('videoPlayer');
-    video.pause();
-    video.src='';
-    modal.style.display='none';
+    document.getElementById('videoPlayer').pause();
+    document.getElementById('modal').style.display='none';
 }
 
-function confirmDish(){
-    const name=document.getElementById('dishName').textContent;
-    let orders=JSON.parse(localStorage.getItem('confirmedOrders')||'[]');
-    const btn=document.getElementById('confirmBtn');
-    if(!orders.includes(name)){
-        orders.push(name);
-        localStorage.setItem('confirmedOrders', JSON.stringify(orders));
-        btn.classList.add('confirmed');
-    } else {
-        orders = orders.filter(item => item !== name);
-        localStorage.setItem('confirmedOrders', JSON.stringify(orders));
-        btn.classList.remove('confirmed');
-    }
-}
+function confirmDish(){}
 
-// وظيفة زر الرجوع
 function goHome(){
     window.location.href='index.html';
 }
 </script>
+
 
 </body>
 </html>
