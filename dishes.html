@@ -2,298 +2,41 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>قائمة الأطباق</title>
-
 <style>
-body {
-    margin: 0;
-    font-family: Tahoma, Arial;
-    background: #f3f3f3;
-}
-
-/* زر الرجوع الاحترافي */
-.back-btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    border: none;
-    background: #ffffff;
-    color: #8b0000;
-    font-size: 22px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-    transition: 0.2s;
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    z-index: 1000;
-}
-
-.back-btn:hover {
-    background: #8b0000;
-    color: white;
-}
-
-.back-btn:active {
-    transform: scale(0.9);
-}
-
-.container {
-    padding: 15px;
-    margin-top: 70px; /* لإفساح مساحة للزر */
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-}
-
-.item {
-    background: #fff;
-    border-radius: 12px;
-    padding: 12px;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-.icon {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
-    cursor: pointer;
-    border: 3px solid #8b0000;
-}
-
-h3 {
-    margin: 8px 0 4px;
-    font-size: 16px;
-}
-
-p {
-    margin: 0;
-    font-size: 14px;
-    color: #444;
-}
-
-/* نافذة الفيديو + المعلومات */
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-}
-
-.modal-content {
-    background: #fff;
-    width: 90%;
-    max-width: 500px;
-    border-radius: 10px;
-    position: relative;
-    padding: 15px;
-    text-align: right;
-}
-
-.modal-content video {
-    width: 100%;
-    border-radius: 10px;
-}
-
-.close {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #8b0000;
-}
-
-.info {
-    margin-top: 10px;
-    font-size: 14px;
-}
-
-.confirm-btn {
-    margin-top: 10px;
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    background: #8b0000;
-    color: white;
-    transition: 0.3s;
-}
-
-.confirm-btn.confirmed {
-    background: #28a745;
-}
-
-@media (max-width:768px){
-    .grid{grid-template-columns: repeat(2,1fr);}
-}
-@media (max-width:480px){
-    .grid{grid-template-columns: 1fr;}
-}
+body{font-family:tahoma;background:#f3f3f3;margin:0;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.item{background:#fff;padding:10px;text-align:center;border-radius:10px}
+.item img{width:80px;height:80px;border-radius:50%;border:2px solid #8b0000}
+h3,p{margin:5px 0}
+@media(max-width:768px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<!-- زر الرجوع الاحترافي -->
-<button class="back-btn" onclick="goHome()">←</button>
-
-<div class="container">
-<div class="grid">
-
-<!-- 12 طبق -->
-<div class="item">
-<img src="makla1.png" class="icon" onclick="openModal('vi.mp4', 'كسكسي', 'القمح، خضار، توابل', 'غني بالألياف والفيتامينات')">
-<h3>كسكسي</h3><p>700 دج</p>
-</div>
-
-<div class="item">
-<img src="makla2.png" class="icon" onclick="openModal('vi.mp4', 'شخشوخة', 'السميد، لحم، صلصة', 'غني بالبروتين والطاقة')">
-<h3>شخشوخة</h3><p>850 دج</p>
-</div>
-
-<div class="item">
-<img src="makla3.png" class="icon" onclick="openModal('vi.mp4', 'طاجين زيتون', 'لحم، زيتون، خضار', 'يحتوي على مضادات أكسدة وفيتامينات')">
-<h3>طاجين زيتون</h3><p>600 دج</p>
-</div>
-
-<div class="item">
-<img src="makla1.png" class="icon" onclick="openModal('vi.mp4', 'دوبارة', 'لحم، طماطم، توابل', 'غني بالبروتين والمعادن')">
-<h3>دوبارة</h3><p>500 دج</p>
-</div>
-
-<div class="item">
-<img src="makla2.png" class="icon" onclick="openModal('vi.mp4', 'شوربة فريك', 'فريك، دجاج، خضار', 'غنية بالألياف والبروتين')">
-<h3>شوربة فريك</h3><p>400 دج</p>
-</div>
-
-<div class="item">
-<img src="makla3.png" class="icon" onclick="openModal('vi.mp4', 'طاجين لحم', 'لحم، خضار، توابل', 'غني بالبروتين والمعادن')">
-<h3>طاجين لحم</h3><p>900 دج</p>
-</div>
-
-<div class="item">
-<img src="makla1.png" class="icon" onclick="openModal('vi.mp4', 'رز بالدجاج', 'رز، دجاج، توابل', 'غني بالكربوهيدرات والبروتين')">
-<h3>رز بالدجاج</h3><p>650 دج</p>
-</div>
-
-<div class="item">
-<img src="makla2.png" class="icon" onclick="openModal('vi.mp4', 'معكرونة', 'معكرونة، صلصة، جبن', 'غنية بالطاقة والكالسيوم')">
-<h3>معكرونة</h3><p>550 دج</p>
-</div>
-
-<div class="item">
-<img src="makla3.png" class="icon" onclick="openModal('vi.mp4', 'طاجين بطاطا', 'بطاطا، لحم، خضار', 'يحتوي على فيتامينات ومعادن')">
-<h3>طاجين بطاطا</h3><p>500 دج</p>
-</div>
-
-<div class="item">
-<img src="makla1.png" class="icon" onclick="openModal('vi.mp4', 'كسكسي خضر', 'قمح، خضار متنوعة', 'غني بالألياف والفيتامينات')">
-<h3>كسكسي خضر</h3><p>600 دج</p>
-</div>
-
-<div class="item">
-<img src="makla2.png" class="icon" onclick="openModal('vi.mp4', 'شخشوخة لحم', 'سميد، لحم، توابل', 'غني بالبروتين والمعادن')">
-<h3>شخشوخة لحم</h3><p>900 دج</p>
-</div>
-
-<div class="item">
-<img src="makla3.png" class="icon" onclick="openModal('vi.mp4', 'طاجين دجاج', 'دجاج، خضار، توابل', 'غني بالبروتين والفيتامينات')">
-<h3>طاجين دجاج</h3><p>750 دج</p>
-</div>
-
-</div>
-</div>
-
-<!-- نافذة الفيديو + المعلومات -->
-<div class="modal" id="modal">
-<div class="modal-content">
-<span class="close" onclick="closeModal()">✖</span>
-<video id="videoPlayer" controls></video>
-<div class="info">
-    <p><strong>الطبق:</strong> <span id="dishName"></span></p>
-    <p><strong>المكونات:</strong> <span id="ingredients"></span></p>
-    <p><strong>الفوائد الغذائية:</strong> <span id="nutrition"></span></p>
-</div>
-<button id="confirmBtn" class="confirm-btn" onclick="confirmDish()">تأكيد الطلب</button>
-</div>
-</div>
+<h2>قائمة الأطباق</h2>
+<div class="grid"></div>
 
 <script>
-// بيانات افتراضية (تُنشأ أول مرة فقط)
-const defaultDishes = [
- {id:1,name:"كسكسي",price:700,image:"makla1.png",ing:"قمح، خضار، توابل",nut:"غني بالألياف"},
- {id:2,name:"شخشوخة",price:850,image:"makla2.png",ing:"سميد، لحم",nut:"غني بالبروتين"},
- {id:3,name:"طاجين زيتون",price:600,image:"makla3.png",ing:"لحم، زيتون",nut:"فيتامينات"},
- {id:4,name:"دوبارة",price:500,image:"makla1.png",ing:"لحم، طماطم",nut:"معادن"},
- {id:5,name:"شوربة فريك",price:400,image:"makla2.png",ing:"فريك، دجاج",nut:"ألياف"},
- {id:6,name:"طاجين لحم",price:900,image:"makla3.png",ing:"لحم، خضار",nut:"بروتين"},
- {id:7,name:"رز بالدجاج",price:650,image:"makla1.png",ing:"رز، دجاج",nut:"طاقة"},
- {id:8,name:"معكرونة",price:550,image:"makla2.png",ing:"معكرونة، جبن",nut:"كالسيوم"},
- {id:9,name:"طاجين بطاطا",price:500,image:"makla3.png",ing:"بطاطا، لحم",nut:"فيتامينات"},
- {id:10,name:"كسكسي خضر",price:600,image:"makla1.png",ing:"قمح، خضر",nut:"ألياف"},
- {id:11,name:"شخشوخة لحم",price:900,image:"makla2.png",ing:"سميد، لحم",nut:"بروتين"},
- {id:12,name:"طاجين دجاج",price:750,image:"makla3.png",ing:"دجاج، خضار",nut:"فيتامينات"}
-];
+// ضع رابط GitHub الخاص بك هنا
+const url = "https://username.github.io/project/dishes.json";
 
-// إنشاء البيانات أول مرة
-if(!localStorage.getItem("dishes")){
-    localStorage.setItem("dishes", JSON.stringify(defaultDishes));
-}
-
-function loadDishes(){
-    const dishes = JSON.parse(localStorage.getItem("dishes"));
-    const grid = document.getElementById("dishesGrid");
-    grid.innerHTML = "";
-
-    dishes.forEach(d => {
-        grid.innerHTML += `
-        <div class="item">
-            <img src="${d.image}" class="icon"
-             onclick="openModal('vi.mp4','${d.name}','${d.ing}','${d.nut}')">
-            <h3>${d.name}</h3>
-            <p>${d.price} دج</p>
-        </div>
-        `;
-    });
-}
-
-loadDishes();
-
-// نافذة التفاصيل
-function openModal(videoSrc,name,ingredients,nutrition){
-    document.getElementById('dishName').textContent=name;
-    document.getElementById('ingredients').textContent=ingredients;
-    document.getElementById('nutrition').textContent=nutrition;
-    const video=document.getElementById('videoPlayer');
-    video.src=videoSrc;
-    video.play();
-    document.getElementById('modal').style.display='flex';
-}
-
-function closeModal(){
-    document.getElementById('videoPlayer').pause();
-    document.getElementById('modal').style.display='none';
-}
-
-function confirmDish(){}
-
-function goHome(){
-    window.location.href='index.html';
-}
+fetch(url)
+.then(res=>res.json())
+.then(dishes=>{
+  const grid=document.querySelector(".grid");
+  dishes.forEach(d=>{
+    grid.innerHTML += `
+      <div class="item">
+        <img src="${d.image}">
+        <h3>${d.name}</h3>
+        <p>${d.price} دج</p>
+      </div>
+    `;
+  });
+});
 </script>
-
 
 </body>
 </html>
