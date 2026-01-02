@@ -2,11 +2,11 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>Admin</title>
+<title>لوحة التحكم</title>
 <style>
-body{font-family:tahoma;padding:20px}
-.card{background:#f5f5f5;padding:10px;margin-bottom:10px}
-input{width:100%;margin:5px 0}
+body{font-family:tahoma;background:#f3f3f3;padding:20px}
+.card{background:#fff;padding:15px;margin-bottom:15px;border-radius:10px}
+input{width:100%;padding:6px;margin:5px 0}
 textarea{width:100%;height:200px}
 </style>
 </head>
@@ -19,7 +19,9 @@ textarea{width:100%;height:200px}
 <textarea id="output"></textarea>
 
 <script>
-fetch("https://username.github.io/project/dishes.json")
+const url = "https://username.github.io/project/dishes.json";
+
+fetch(url)
 .then(res=>res.json())
 .then(dishes=>{
   const panel=document.getElementById("panel");
@@ -30,11 +32,11 @@ fetch("https://username.github.io/project/dishes.json")
 
     let name=document.createElement("input");
     name.value=d.name;
-
     let price=document.createElement("input");
     price.type="number";
     price.value=d.price;
 
+    // أي تغيير يحدث هنا يحدث على JSON المعروض أسفل
     name.oninput=price.oninput=()=>{
       d.name=name.value;
       d.price=price.value;
