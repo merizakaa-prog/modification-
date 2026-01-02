@@ -7,8 +7,8 @@
 body{font-family:tahoma;background:#f3f3f3;padding:20px}
 .card{background:#fff;padding:15px;margin-bottom:15px;border-radius:10px}
 input{width:100%;padding:6px;margin:5px 0}
-img{width:80px;height:80px;border-radius:50%;cursor:pointer}
-button{padding:8px;background:#8b0000;color:#fff;border:none;border-radius:6px}
+img{width:80px;height:80px;border-radius:50%;cursor:pointer;border:2px solid #8b0000}
+button{padding:8px;background:#8b0000;color:#fff;border:none;border-radius:6px;width:100%}
 </style>
 </head>
 <body>
@@ -19,43 +19,43 @@ button{padding:8px;background:#8b0000;color:#fff;border:none;border-radius:6px}
 <script>
 const images=["makla1.png","makla2.png","makla3.png"];
 
-for(let i=1;i<=12;i++){
- let data = JSON.parse(localStorage.getItem("dish"+i)) || {
-   name:"طبق "+i,
-   price:"0 دج",
-   image:images[0]
- };
+// قراءة الأطباق
+let dishes = JSON.parse(localStorage.getItem("dishes")) || [];
 
- let div=document.createElement("div");
- div.className="card";
+const panel = document.getElementById("panel");
 
- let img=document.createElement("img");
- img.src=data.image;
- img.onclick=()=>{
-   let index=(images.indexOf(img.src.split("/").pop())+1)%images.length;
-   img.src=images[index];
- };
+dishes.forEach((dish,index)=>{
+  const card = document.createElement("div");
+  card.className="card";
 
- let name=document.createElement("input");
- name.value=data.name;
+  const img = document.createElement("img");
+  img.src = dish.image;
+  img.onclick = ()=>{
+    let i = images.indexOf(img.src.split("/").pop());
+    img.src = images[(i+1)%images.length];
+  };
 
- let price=document.createElement("input");
- price.value=data.price;
+  const name = document.createElement("input");
+  name.value = dish.name;
 
- let btn=document.createElement("button");
- btn.textContent="حفظ";
- btn.onclick=()=>{
-   localStorage.setItem("dish"+i,JSON.stringify({
-     name:name.value,
-     price:price.value,
-     image:img.src.split("/").pop()
-   }));
-   alert("تم الحفظ ✔");
- };
+  const price = document.createElement("input");
+  price.type="number";
+  price.value = dish.price;
 
- div.append(img,name,price,btn);
- document.getElementById("panel").appendChild(div);
-}
+  const btn = document.createElement("button");
+  btn.textContent="حفظ";
+  btn.onclick = ()=>{
+    dish.name = name.value;
+    dish.price = price.value;
+    dish.image = img.src.split("/").pop();
+
+    localStorage.setItem("dishes", JSON.stringify(dishes));
+    alert("تم الحفظ ✔");
+  };
+
+  card.append(img,name,price,btn);
+  panel.appendChild(card);
+});
 </script>
 
 </body>
