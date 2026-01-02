@@ -2,11 +2,12 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>إدارة الأطباق</title>
+<title>لوحة التحكم</title>
+
 <style>
 body{font-family:tahoma;background:#f3f3f3;padding:20px}
 .card{background:#fff;padding:15px;margin-bottom:15px;border-radius:10px}
-input{width:100%;padding:6px;margin:5px 0}
+input{width:100%;padding:6px;margin:6px 0}
 img{width:80px;height:80px;border-radius:50%;cursor:pointer;border:2px solid #8b0000}
 button{padding:8px;background:#8b0000;color:#fff;border:none;border-radius:6px;width:100%}
 </style>
@@ -17,45 +18,62 @@ button{padding:8px;background:#8b0000;color:#fff;border:none;border-radius:6px;w
 <div id="panel"></div>
 
 <script>
+const images=["makla1.png","makla2.png","makla3.png"];
+
 const defaultDishes = [
- {id:1,name:"كسكسي",price:700,image:"makla1.png",ing:"قمح، خضار",nut:"غني بالألياف"},
- {id:2,name:"شخشوخة",price:850,image:"makla2.png",ing:"سميد، لحم",nut:"بروتين"},
- {id:3,name:"طاجين زيتون",price:600,image:"makla3.png",ing:"لحم، زيتون",nut:"فيتامينات"},
- {id:4,name:"دوبارة",price:500,image:"makla1.png",ing:"لحم، طماطم",nut:"معادن"},
- {id:5,name:"شوربة فريك",price:400,image:"makla2.png",ing:"فريك، دجاج",nut:"ألياف"},
- {id:6,name:"طاجين لحم",price:900,image:"makla3.png",ing:"لحم، خضار",nut:"بروتين"},
- {id:7,name:"رز بالدجاج",price:650,image:"makla1.png",ing:"رز، دجاج",nut:"طاقة"},
- {id:8,name:"معكرونة",price:550,image:"makla2.png",ing:"معكرونة، جبن",nut:"كالسيوم"},
- {id:9,name:"طاجين بطاطا",price:500,image:"makla3.png",ing:"بطاطا، لحم",nut:"فيتامينات"},
- {id:10,name:"كسكسي خضر",price:600,image:"makla1.png",ing:"قمح، خضر",nut:"ألياف"},
- {id:11,name:"شخشوخة لحم",price:900,image:"makla2.png",ing:"سميد، لحم",nut:"بروتين"},
- {id:12,name:"طاجين دجاج",price:750,image:"makla3.png",ing:"دجاج، خضار",nut:"فيتامينات"}
+ {id:1,name:"كسكسي",price:700,image:"makla1.png"},
+ {id:2,name:"شخشوخة",price:850,image:"makla2.png"},
+ {id:3,name:"طاجين زيتون",price:600,image:"makla3.png"},
+ {id:4,name:"دوبارة",price:500,image:"makla1.png"},
+ {id:5,name:"شوربة فريك",price:400,image:"makla2.png"},
+ {id:6,name:"طاجين لحم",price:900,image:"makla3.png"},
+ {id:7,name:"رز بالدجاج",price:650,image:"makla1.png"},
+ {id:8,name:"معكرونة",price:550,image:"makla2.png"},
+ {id:9,name:"طاجين بطاطا",price:500,image:"makla3.png"},
+ {id:10,name:"كسكسي خضر",price:600,image:"makla1.png"},
+ {id:11,name:"شخشوخة لحم",price:900,image:"makla2.png"},
+ {id:12,name:"طاجين دجاج",price:750,image:"makla3.png"}
 ];
 
 if(!localStorage.getItem("dishes")){
   localStorage.setItem("dishes", JSON.stringify(defaultDishes));
 }
 
-function loadDishes(){
-  const dishes = JSON.parse(localStorage.getItem("dishes"));
-  const grid = document.getElementById("dishesGrid");
-  grid.innerHTML = "";
+let dishes = JSON.parse(localStorage.getItem("dishes"));
+const panel = document.getElementById("panel");
 
-  dishes.forEach(d=>{
-    grid.innerHTML += `
-      <div class="item">
-        <img src="${d.image}" class="icon"
-          onclick="openModal('vi.mp4','${d.name}','${d.ing}','${d.nut}')">
-        <h3>${d.name}</h3>
-        <p>${d.price} دج</p>
-      </div>
-    `;
-  });
-}
+dishes.forEach((d,i)=>{
+  const card=document.createElement("div");
+  card.className="card";
 
-loadDishes();
+  const img=document.createElement("img");
+  img.src=d.image;
+  img.onclick=()=>{
+    let idx=(images.indexOf(img.src.split("/").pop())+1)%images.length;
+    img.src=images[idx];
+  };
+
+  const name=document.createElement("input");
+  name.value=d.name;
+
+  const price=document.createElement("input");
+  price.type="number";
+  price.value=d.price;
+
+  const btn=document.createElement("button");
+  btn.textContent="حفظ";
+  btn.onclick=()=>{
+    dishes[i].name=name.value;
+    dishes[i].price=price.value;
+    dishes[i].image=img.src.split("/").pop();
+    localStorage.setItem("dishes",JSON.stringify(dishes));
+    alert("تم الحفظ ✔");
+  };
+
+  card.append(img,name,price,btn);
+  panel.appendChild(card);
+});
 </script>
-
 
 </body>
 </html>
