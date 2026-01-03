@@ -2,40 +2,139 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>قائمة الأطباق</title>
+
 <style>
-body{font-family:tahoma;background:#f3f3f3;margin:0;padding:20px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
-.item{background:#fff;padding:10px;text-align:center;border-radius:10px}
-.item img{width:80px;height:80px;border-radius:50%;border:2px solid #8b0000}
-h3,p{margin:5px 0}
-@media(max-width:768px){.grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:480px){.grid{grid-template-columns:1fr}}
+body{
+    margin:0;
+    font-family:Tahoma;
+    background:#f3f3f3
+}
+.container{
+    padding:15px;
+    margin-top:60px
+}
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px
+}
+.item{
+    background:#fff;
+    border-radius:12px;
+    padding:12px;
+    text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.15)
+}
+.icon{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    object-fit:cover;
+    border:3px solid #8b0000
+}
+h3{margin:8px 0 4px;font-size:16px}
+p{margin:0;font-size:14px;color:#444}
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.85);
+    justify-content:center;
+    align-items:center;
+    z-index:999
+}
+.modal-content{
+    background:#fff;
+    width:90%;
+    max-width:500px;
+    border-radius:10px;
+    padding:15px;
+    position:relative
+}
+.close{
+    position:absolute;
+    top:10px;
+    left:10px;
+    font-size:24px;
+    cursor:pointer;
+    color:#8b0000
+}
+video{width:100%;border-radius:10px}
+@media(max-width:768px){
+    .grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+    .grid{grid-template-columns:1fr}
+}
 </style>
 </head>
+
 <body>
 
-<h2>قائمة الأطباق</h2>
-<div class="grid"></div>
+<div class="container">
+<div class="grid" id="grid"></div>
+</div>
+
+<!-- نافذة الفيديو -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">✖</span>
+    <video id="video" controls></video>
+    <p><strong id="dishName"></strong></p>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "XXXX",
+  appId: "XXXX"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const grid = document.getElementById("grid");
+
+const snapshot = await getDocs(collection(db,"dishes"));
+
+snapshot.forEach(doc=>{
+  const d = doc.data();
+
+  grid.innerHTML += `
+    <div class="item">
+      <img src="${d.image}" class="icon"
+        onclick="openModal('${d.name}')">
+      <h3>${d.name}</h3>
+      <p>${d.price} دج</p>
+    </div>
+  `;
+});
+</script>
 
 <script>
-// ضع رابط GitHub الخاص بك هنا
-const url = "https://username.github.io/project/dishes.json";
+function openModal(name){
+  document.getElementById("dishName").textContent = name;
+  const video = document.getElementById("video");
+  video.src = "vi.mp4";
+  video.play();
+  document.getElementById("modal").style.display="flex";
+}
 
-fetch(url)
-.then(res=>res.json())
-.then(dishes=>{
-  const grid=document.querySelector(".grid");
-  dishes.forEach(d=>{
-    grid.innerHTML += `
-      <div class="item">
-        <img src="${d.image}">
-        <h3>${d.name}</h3>
-        <p>${d.price} دج</p>
-      </div>
-    `;
-  });
-});
+function closeModal(){
+  const video=document.getElementById("video");
+  video.pause();
+  document.getElementById("modal").style.display="none";
+}
 </script>
 
 </body>
