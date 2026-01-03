@@ -5,8 +5,27 @@
 <title>قائمة الأطباق</title>
 
 <style>
-body{font-family:tahoma;background:#f3f3f3;margin:0;padding:15px}
+body{
+  font-family:tahoma;
+  background:#f3f3f3;
+  margin:0;
+  padding:15px
+}
 
+/* زر الطلبات */
+.top-btn{
+  background:#8b0000;
+  color:#fff;
+  border:none;
+  padding:10px;
+  width:100%;
+  border-radius:8px;
+  margin-bottom:15px;
+  font-size:16px;
+  cursor:pointer
+}
+
+/* الشبكة */
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -31,6 +50,17 @@ body{font-family:tahoma;background:#f3f3f3;margin:0;padding:15px}
 
 h3{margin:8px 0 4px;font-size:16px}
 p{margin:0;font-size:14px;color:#444}
+
+.add-btn{
+  margin-top:6px;
+  padding:6px;
+  width:100%;
+  background:#8b0000;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer
+}
 
 /* ===== نافذة التفاصيل ===== */
 .modal{
@@ -74,9 +104,13 @@ p{margin:0;font-size:14px;color:#444}
 </head>
 <body>
 
+<button class="top-btn" onclick="location.href='orders.html'">
+🧾 عرض الطلبات
+</button>
+
 <div class="grid" id="dishesGrid"></div>
 
-<!-- نافذة الفيديو + المعلومات -->
+<!-- نافذة الفيديو -->
 <div class="modal" id="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal()">✖</span>
@@ -93,6 +127,7 @@ p{margin:0;font-size:14px;color:#444}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+/* 🔴 ضع بيانات Firebase */
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "restaurant-e323a.firebaseapp.com",
@@ -105,6 +140,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+/* تحميل الأطباق */
 async function loadDishes(){
   const querySnapshot = await getDocs(collection(db,"dishes"));
   const grid = document.getElementById("dishesGrid");
@@ -112,17 +148,36 @@ async function loadDishes(){
 
   querySnapshot.forEach(docSnap=>{
     const d = docSnap.data();
+
     grid.innerHTML += `
       <div class="item">
         <img src="${d.image}"
-          onclick="openModal('${d.video}','${d.name}','${d.ingredients}','${d.nutrition}')">
+          onclick="openModal(
+            '${d.video}',
+            '${d.name}',
+            '${d.ingredients}',
+            '${d.nutrition}'
+          )">
         <h3>${d.name}</h3>
         <p>${d.price} دج</p>
+        <button class="add-btn"
+          onclick="addToCart('${d.name}', ${d.price})">
+          إضافة للطلب
+        </button>
       </div>
     `;
   });
 }
 
+/* سلة الطلبات */
+window.addToCart = function(name, price){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart.push({name, price});
+  localStorage.setItem("cart", JSON.stringify(cart));
+  alert("تمت إضافة الطلب ✔");
+}
+
+/* نافذة التفاصيل */
 window.openModal = function(video,name,ingredients,nutrition){
   document.getElementById("dishName").textContent = name;
   document.getElementById("ingredients").textContent = ingredients;
