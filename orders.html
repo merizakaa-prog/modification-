@@ -2,71 +2,64 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>الطلبات</title>
-
+<title>طلبات الزبائن</title>
 <style>
-body{
-  font-family:tahoma;
-  background:#f3f3f3;
-  padding:15px
-}
-h2{text-align:center}
-.card{
+body {font-family:tahoma;background:#f3f3f3;margin:0;padding:15px}
+h2{text-align:center;margin-bottom:20px}
+.table {
+  width:100%;
+  border-collapse:collapse;
   background:#fff;
-  padding:12px;
   border-radius:10px;
-  margin-bottom:10px;
+  overflow:hidden;
   box-shadow:0 2px 6px rgba(0,0,0,.15)
 }
-.total{
-  font-size:18px;
+.table th, .table td {
+  padding:12px;
   text-align:center;
-  margin-top:15px
+  border-bottom:1px solid #ddd;
 }
-button{
-  width:100%;
-  padding:10px;
+.table th {
   background:#8b0000;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  font-size:16px;
-  cursor:pointer
+  color:white;
+}
+.total {
+  margin-top:15px;
+  font-size:18px;
+  font-weight:bold;
+  text-align:right;
 }
 </style>
 </head>
 <body>
 
-<h2>🧾 الطلبات</h2>
-<div id="orders"></div>
-
-<div class="total">
-  <strong>المجموع:</strong> <span id="total">0</span> دج
-</div>
-
-<button onclick="confirmOrder()">تأكيد الطلب</button>
+<h2>طلبات الزبائن</h2>
+<table class="table" id="ordersTable">
+  <thead>
+    <tr>
+      <th>الطبق</th>
+      <th>السعر (دج)</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+<div class="total" id="totalPrice">المجموع: 0 دج</div>
 
 <script>
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-let ordersDiv = document.getElementById("orders");
-let total = 0;
+// جلب الطلبات من localStorage
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
+const tbody = document.querySelector("#ordersTable tbody");
+const totalDiv = document.getElementById("totalPrice");
 
-cart.forEach(item=>{
-  total += item.price;
-  ordersDiv.innerHTML += `
-    <div class="card">
-      ${item.name} - ${item.price} دج
-    </div>
-  `;
+let total = 0;
+orders.forEach(order => {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td>${order.name}</td><td>${order.price}</td>`;
+  tbody.appendChild(tr);
+  total += Number(order.price);
 });
 
-document.getElementById("total").textContent = total;
-
-function confirmOrder(){
-  alert("✅ تم تأكيد الطلب\nالمجموع: " + total + " دج");
-  localStorage.removeItem("cart");
-  location.reload();
-}
+totalDiv.textContent = `المجموع: ${total} دج`;
 </script>
 
 </body>
