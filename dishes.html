@@ -3,35 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <title>قائمة الأطباق</title>
-
 <style>
-body{
-  font-family:tahoma;
-  background:#f3f3f3;
-  margin:0;
-  padding:15px
-}
+body {font-family:tahoma;background:#f3f3f3;margin:0;padding:15px}
 
-/* زر الطلبات */
-.top-btn{
-  background:#8b0000;
-  color:#fff;
-  border:none;
-  padding:10px;
-  width:100%;
-  border-radius:8px;
-  margin-bottom:15px;
-  font-size:16px;
-  cursor:pointer
-}
-
-/* الشبكة */
+/* شبكة الأطباق */
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:15px
+  gap:15px;
 }
-
 .item{
   background:#fff;
   border-radius:12px;
@@ -39,7 +19,6 @@ body{
   text-align:center;
   box-shadow:0 2px 6px rgba(0,0,0,.15)
 }
-
 .item img{
   width:90px;
   height:90px;
@@ -47,22 +26,10 @@ body{
   border:3px solid #8b0000;
   cursor:pointer
 }
-
 h3{margin:8px 0 4px;font-size:16px}
 p{margin:0;font-size:14px;color:#444}
 
-.add-btn{
-  margin-top:6px;
-  padding:6px;
-  width:100%;
-  background:#8b0000;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  cursor:pointer
-}
-
-/* ===== نافذة التفاصيل ===== */
+/* نافذة التفاصيل */
 .modal{
   display:none;
   position:fixed;
@@ -72,7 +39,6 @@ p{margin:0;font-size:14px;color:#444}
   align-items:center;
   z-index:999
 }
-
 .modal-content{
   background:#fff;
   width:90%;
@@ -81,12 +47,10 @@ p{margin:0;font-size:14px;color:#444}
   padding:15px;
   position:relative
 }
-
 .modal video{
   width:100%;
   border-radius:10px
 }
-
 .close{
   position:absolute;
   top:10px;
@@ -95,22 +59,32 @@ p{margin:0;font-size:14px;color:#444}
   cursor:pointer;
   color:#8b0000
 }
-
 .info{
   margin-top:10px;
   font-size:14px
+}
+.confirm-btn{
+  margin-top:10px;
+  width:100%;
+  padding:10px;
+  font-size:16px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  background:#8b0000;
+  color:white;
+  transition:0.3s;
+}
+.confirm-btn.confirmed{
+  background:green;
 }
 </style>
 </head>
 <body>
 
-<button class="top-btn" onclick="location.href='orders.html'">
-🧾 عرض الطلبات
-</button>
-
 <div class="grid" id="dishesGrid"></div>
 
-<!-- نافذة الفيديو -->
+<!-- نافذة الفيديو + التفاصيل -->
 <div class="modal" id="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal()">✖</span>
@@ -120,6 +94,7 @@ p{margin:0;font-size:14px;color:#444}
       <p><strong>المكونات:</strong> <span id="ingredients"></span></p>
       <p><strong>الفوائد:</strong> <span id="nutrition"></span></p>
     </div>
+    <button id="confirmBtn" class="confirm-btn" onclick="confirmOrder(this)">تأكيد الطلب</button>
   </div>
 </div>
 
@@ -127,7 +102,7 @@ p{margin:0;font-size:14px;color:#444}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* 🔴 ضع بيانات Firebase */
+/* بيانات Firebase */
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "restaurant-e323a.firebaseapp.com",
@@ -140,7 +115,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* تحميل الأطباق */
 async function loadDishes(){
   const querySnapshot = await getDocs(collection(db,"dishes"));
   const grid = document.getElementById("dishesGrid");
@@ -148,36 +122,17 @@ async function loadDishes(){
 
   querySnapshot.forEach(docSnap=>{
     const d = docSnap.data();
-
     grid.innerHTML += `
       <div class="item">
-        <img src="${d.image}"
-          onclick="openModal(
-            '${d.video}',
-            '${d.name}',
-            '${d.ingredients}',
-            '${d.nutrition}'
-          )">
+        <img src="${d.image}" onclick="openModal('${d.video}','${d.name}','${d.ingredients}','${d.nutrition}')">
         <h3>${d.name}</h3>
         <p>${d.price} دج</p>
-        <button class="add-btn"
-          onclick="addToCart('${d.name}', ${d.price})">
-          إضافة للطلب
-        </button>
       </div>
     `;
   });
 }
 
-/* سلة الطلبات */
-window.addToCart = function(name, price){
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  cart.push({name, price});
-  localStorage.setItem("cart", JSON.stringify(cart));
-  alert("تمت إضافة الطلب ✔");
-}
-
-/* نافذة التفاصيل */
+/* فتح نافذة التفاصيل */
 window.openModal = function(video,name,ingredients,nutrition){
   document.getElementById("dishName").textContent = name;
   document.getElementById("ingredients").textContent = ingredients;
@@ -187,9 +142,15 @@ window.openModal = function(video,name,ingredients,nutrition){
   videoPlayer.src = video;
   videoPlayer.play();
 
+  const confirmBtn = document.getElementById("confirmBtn");
+  confirmBtn.classList.remove("confirmed");
+  confirmBtn.disabled = false;
+  confirmBtn.textContent = "تأكيد الطلب";
+
   document.getElementById("modal").style.display = "flex";
 }
 
+/* إغلاق نافذة التفاصيل */
 window.closeModal = function(){
   const video = document.getElementById("videoPlayer");
   video.pause();
@@ -197,7 +158,16 @@ window.closeModal = function(){
   document.getElementById("modal").style.display = "none";
 }
 
-loadDishes();
+/* تأكيد الطلب */
+window.confirmOrder = function(btn){
+  btn.classList.add("confirmed");
+  btn.textContent = "تم التأكيد ✔";
+  btn.disabled = true;
+
+  // هنا يمكنك إضافة كود إرسال الطلب إلى صفحة الطلبات أو Firebase
+}
+
+await loadDishes();
 </script>
 
 </body>
