@@ -2,65 +2,132 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>لوحة التحكم - إدارة الأطباق</title>
+<title>قائمة الأطباق</title>
 
 <style>
 body{
   font-family:tahoma;
   background:#f3f3f3;
-  padding:20px;
+  margin:0;
+  padding:15px
 }
-h2{text-align:center}
-.card{
-  background:#fff;
-  padding:15px;
+
+/* زر الطلبات */
+.top-btn{
+  background:#8b0000;
+  color:#fff;
+  border:none;
+  padding:10px;
+  width:100%;
+  border-radius:8px;
   margin-bottom:15px;
+  font-size:16px;
+  cursor:pointer
+}
+
+/* الشبكة */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px
+}
+
+.item{
+  background:#fff;
   border-radius:12px;
+  padding:12px;
+  text-align:center;
   box-shadow:0 2px 6px rgba(0,0,0,.15)
 }
-input, textarea{
-  width:100%;
-  padding:8px;
-  margin:6px 0;
-  font-family:tahoma
-}
-img{
+
+.item img{
   width:90px;
   height:90px;
   border-radius:50%;
   border:3px solid #8b0000;
-  display:block;
-  margin:10px auto;
+  cursor:pointer
 }
-button{
+
+h3{margin:8px 0 4px;font-size:16px}
+p{margin:0;font-size:14px;color:#444}
+
+.add-btn{
+  margin-top:6px;
+  padding:6px;
   width:100%;
-  padding:10px;
   background:#8b0000;
   color:#fff;
   border:none;
   border-radius:6px;
-  font-size:15px;
   cursor:pointer
+}
+
+/* ===== نافذة التفاصيل ===== */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  justify-content:center;
+  align-items:center;
+  z-index:999
+}
+
+.modal-content{
+  background:#fff;
+  width:90%;
+  max-width:500px;
+  border-radius:10px;
+  padding:15px;
+  position:relative
+}
+
+.modal video{
+  width:100%;
+  border-radius:10px
+}
+
+.close{
+  position:absolute;
+  top:10px;
+  left:10px;
+  font-size:22px;
+  cursor:pointer;
+  color:#8b0000
+}
+
+.info{
+  margin-top:10px;
+  font-size:14px
 }
 </style>
 </head>
-
 <body>
 
-<h2>لوحة التحكم</h2>
-<div id="panel"></div>
+<button class="top-btn" onclick="location.href='orders.html'">
+🧾 عرض الطلبات
+</button>
+
+<div class="grid" id="dishesGrid"></div>
+
+<!-- نافذة الفيديو -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">✖</span>
+    <video id="videoPlayer" controls></video>
+    <div class="info">
+      <p><strong>الطبق:</strong> <span id="dishName"></span></p>
+      <p><strong>المكونات:</strong> <span id="ingredients"></span></p>
+      <p><strong>الفوائد:</strong> <span id="nutrition"></span></p>
+    </div>
+  </div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* 🔴 ضع بيانات Firebase الخاصة بك */
+/* 🔴 ضع بيانات Firebase */
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "restaurant-e323a.firebaseapp.com",
@@ -73,81 +140,64 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const panel = document.getElementById("panel");
-
 /* تحميل الأطباق */
-const querySnapshot = await getDocs(collection(db, "dishes"));
+async function loadDishes(){
+  const querySnapshot = await getDocs(collection(db,"dishes"));
+  const grid = document.getElementById("dishesGrid");
+  grid.innerHTML = "";
 
-querySnapshot.forEach(docSnap => {
-  const d = docSnap.data();
-  const id = docSnap.id;
+  querySnapshot.forEach(docSnap=>{
+    const d = docSnap.data();
 
-  const card = document.createElement("div");
-  card.className = "card";
+    grid.innerHTML += `
+      <div class="item">
+        <img src="${d.image}"
+          onclick="openModal(
+            '${d.video}',
+            '${d.name}',
+            '${d.ingredients}',
+            '${d.nutrition}'
+          )">
+        <h3>${d.name}</h3>
+        <p>${d.price} دج</p>
+        <button class="add-btn"
+          onclick="addToCart('${d.name}', ${d.price})">
+          إضافة للطلب
+        </button>
+      </div>
+    `;
+  });
+}
 
-  /* صورة */
-  const img = document.createElement("img");
-  img.src = d.image || "";
+/* سلة الطلبات */
+window.addToCart = function(name, price){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart.push({name, price});
+  localStorage.setItem("cart", JSON.stringify(cart));
+  alert("تمت إضافة الطلب ✔");
+}
 
-  const imageInput = document.createElement("input");
-  imageInput.placeholder = "رابط الصورة";
-  imageInput.value = d.image || "";
-  imageInput.oninput = () => img.src = imageInput.value;
+/* نافذة التفاصيل */
+window.openModal = function(video,name,ingredients,nutrition){
+  document.getElementById("dishName").textContent = name;
+  document.getElementById("ingredients").textContent = ingredients;
+  document.getElementById("nutrition").textContent = nutrition;
 
-  /* اسم */
-  const name = document.createElement("input");
-  name.placeholder = "اسم الطبق";
-  name.value = d.name || "";
+  const videoPlayer = document.getElementById("videoPlayer");
+  videoPlayer.src = video;
+  videoPlayer.play();
 
-  /* السعر */
-  const price = document.createElement("input");
-  price.type = "number";
-  price.placeholder = "السعر";
-  price.value = d.price || 0;
+  document.getElementById("modal").style.display = "flex";
+}
 
-  /* فيديو */
-  const video = document.createElement("input");
-  video.placeholder = "رابط الفيديو";
-  video.value = d.video || "";
+window.closeModal = function(){
+  const video = document.getElementById("videoPlayer");
+  video.pause();
+  video.src = "";
+  document.getElementById("modal").style.display = "none";
+}
 
-  /* مكونات */
-  const ing = document.createElement("textarea");
-  ing.placeholder = "المكونات";
-  ing.value = d.ingredients || "";
-
-  /* فوائد */
-  const nut = document.createElement("textarea");
-  nut.placeholder = "الفوائد الغذائية";
-  nut.value = d.nutrition || "";
-
-  /* حفظ */
-  const btn = document.createElement("button");
-  btn.textContent = "حفظ التغييرات";
-  btn.onclick = async () => {
-    await updateDoc(doc(db, "dishes", id), {
-      name: name.value,
-      price: Number(price.value),
-      image: imageInput.value,
-      video: video.value,
-      ingredients: ing.value,
-      nutrition: nut.value
-    });
-    alert("تم الحفظ ✔");
-  };
-
-  card.append(
-    img,
-    imageInput,
-    name,
-    price,
-    video,
-    ing,
-    nut,
-    btn
-  );
-
-  panel.appendChild(card);
-});
+loadDishes();
 </script>
 
 </body>
