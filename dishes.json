@@ -1,14 +1,109 @@
-[
-  {"id":1,"name":"كسكسي","price":700,"image":"makla1.png"},
-  {"id":2,"name":"شخشوخة","price":850,"image":"makla2.png"},
-  {"id":3,"name":"طاجين زيتون","price":600,"image":"makla3.png"},
-  {"id":4,"name":"دوmmmmبارة","price":500,"image":"makla1.png"},
-  {"id":5,"name":"شوربة فريك","price":400,"image":"makla2.png"},
-  {"id":6,"name":"طاجين لحم","price":900,"image":"makla3.png"},
-  {"id":7,"name":"رز بالدجاج","price":650,"image":"makla1.png"},
-  {"id":8,"name":"معكرونة","price":550,"image":"makla2.png"},
-  {"id":9,"name":"طاجين بطاطا","price":500,"image":"makla3.png"},
-  {"id":10,"name":"كسكسي خضر","price":600,"image":"makla1.png"},
-  {"id":11,"name":"شخشوخة لحم","price":900,"image":"makla2.png"},
-  {"id":12,"name":"طاجين دجاج","price":750,"image":"makla3.png"}
-]
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>لوحة التحكم - إدارة الأطباق</title>
+
+<style>
+body{
+    font-family:tahoma;
+    background:#f3f3f3;
+    padding:20px
+}
+.card{
+    background:#fff;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:10px;
+    box-shadow:0 2px 6px rgba(0,0,0,.15)
+}
+input{
+    width:100%;
+    padding:8px;
+    margin:6px 0
+}
+img{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    border:2px solid #8b0000;
+    cursor:pointer
+}
+button{
+    width:100%;
+    padding:10px;
+    background:#8b0000;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    font-size:15px;
+    cursor:pointer
+}
+</style>
+</head>
+<body>
+
+<h2>لوحة التحكم</h2>
+<div id="panel"></div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "XXXX",
+  appId: "XXXX"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const images = ["makla1.png","makla2.png","makla3.png"];
+const panel = document.getElementById("panel");
+
+const querySnapshot = await getDocs(collection(db, "dishes"));
+
+querySnapshot.forEach(docSnap=>{
+  const d = docSnap.data();
+  const id = docSnap.id;
+
+  const card = document.createElement("div");
+  card.className = "card";
+
+  const img = document.createElement("img");
+  img.src = d.image;
+  img.onclick = ()=>{
+    let i = (images.indexOf(img.src.split("/").pop()) + 1) % images.length;
+    img.src = images[i];
+  };
+
+  const name = document.createElement("input");
+  name.value = d.name;
+
+  const price = document.createElement("input");
+  price.type = "number";
+  price.value = d.price;
+
+  const btn = document.createElement("button");
+  btn.textContent = "حفظ التغييرات";
+  btn.onclick = async ()=>{
+    await updateDoc(doc(db,"dishes",id),{
+      name: name.value,
+      price: Number(price.value),
+      image: img.src.split("/").pop()
+    });
+    alert("تم الحفظ ✔");
+  };
+
+  card.append(img,name,price,btn);
+  panel.appendChild(card);
+});
+</script>
+
+</body>
+</html>
