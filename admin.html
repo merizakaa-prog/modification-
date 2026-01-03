@@ -3,138 +3,81 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة التحكم - إدارة الأطباق</title>
+<title>لوحة التحكم</title>
 
 <style>
-body{
-    font-family: Tahoma, Arial;
-    background:#f3f3f3;
-    padding:20px;
-}
-h2{
-    text-align:center;
-    color:#8b0000;
-}
-.card{
-    background:#fff;
-    padding:15px;
-    margin-bottom:15px;
-    border-radius:12px;
-    box-shadow:0 2px 6px rgba(0,0,0,.15);
-}
-input{
-    width:100%;
-    padding:8px;
-    margin:6px 0;
-    font-size:14px;
-}
-img{
-    width:90px;
-    height:90px;
-    border-radius:50%;
-    border:3px solid #8b0000;
-    cursor:pointer;
-    display:block;
-    margin:10px auto;
-}
-button{
-    width:100%;
-    padding:10px;
-    background:#8b0000;
-    color:#fff;
-    border:none;
-    border-radius:8px;
-    font-size:16px;
-    cursor:pointer;
-}
-button:hover{
-    opacity:.9;
-}
-.note{
-    text-align:center;
-    font-size:13px;
-    color:#555;
-    margin-bottom:15px;
-}
+body{font-family:tahoma;background:#f3f3f3;padding:20px}
+.card{background:#fff;padding:15px;margin-bottom:15px;border-radius:10px}
+input{width:100%;padding:8px;margin:6px 0}
+img{width:80px;height:80px;border-radius:50%;border:2px solid #8b0000;cursor:pointer}
+button{width:100%;padding:10px;background:#8b0000;color:#fff;border:none;border-radius:6px}
 </style>
 </head>
 <body>
 
 <h2>لوحة التحكم</h2>
-<p class="note">اضغط على الصورة لتغييرها – عدل الاسم والسعر ثم اضغط حفظ</p>
-
+<div id="status"></div>
 <div id="panel"></div>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getFirestore, 
-  collection, 
-  getDocs, 
-  doc, 
-  updateDoc 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* 🔴 ضع بيانات Firebase الخاصة بك هنا */
+/* 🔴 ضع بياناتك الحقيقية */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
+  apiKey: "ضع_هنا",
+  authDomain: "ضع_هنا",
+  projectId: "ضع_هنا"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const status = document.getElementById("status");
+status.innerHTML = "⏳ جاري الاتصال بقاعدة البيانات...";
 
-/* صور افتراضية */
-const images = ["makla1.png","makla2.png","makla3.png"];
+try {
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-const panel = document.getElementById("panel");
+  const snapshot = await getDocs(collection(db, "dishes"));
 
-/* جلب الأطباق من Firestore */
-const querySnapshot = await getDocs(collection(db, "dishes"));
+  if (snapshot.empty) {
+    status.innerHTML = "⚠ لا توجد أطباق داخل Collection dishes";
+  } else {
+    status.innerHTML = "✅ تم تحميل الأطباق";
+  }
 
-querySnapshot.forEach(docSnap => {
-  const data = docSnap.data();
-  const dishId = docSnap.id;
+  snapshot.forEach(docSnap => {
+    const d = docSnap.data();
 
-  const card = document.createElement("div");
-  card.className = "card";
+    const card = document.createElement("div");
+    card.className = "card";
 
-  const img = document.createElement("img");
-  img.src = data.image || images[0];
-  img.onclick = () => {
-    let current = images.indexOf(img.src.split("/").pop());
-    let next = (current + 1) % images.length;
-    img.src = images[next];
-  };
+    const img = document.createElement("img");
+    img.src = d.image;
 
-  const nameInput = document.createElement("input");
-  nameInput.placeholder = "اسم الطبق";
-  nameInput.value = data.name || "";
+    const name = document.createElement("input");
+    name.value = d.name;
 
-  const priceInput = document.createElement("input");
-  priceInput.type = "number";
-  priceInput.placeholder = "السعر";
-  priceInput.value = data.price || 0;
+    const price = document.createElement("input");
+    price.type = "number";
+    price.value = d.price;
 
-  const saveBtn = document.createElement("button");
-  saveBtn.textContent = "حفظ التغييرات";
-  saveBtn.onclick = async () => {
-    await updateDoc(doc(db, "dishes", dishId), {
-      name: nameInput.value,
-      price: Number(priceInput.value),
-      image: img.src.split("/").pop()
-    });
-    alert("تم حفظ التغييرات ✔");
-  };
+    const btn = document.createElement("button");
+    btn.textContent = "حفظ";
+    btn.onclick = async () => {
+      await updateDoc(doc(db,"dishes",docSnap.id),{
+        name:name.value,
+        price:Number(price.value)
+      });
+      alert("تم الحفظ ✔");
+    };
 
-  card.append(img, nameInput, priceInput, saveBtn);
-  panel.appendChild(card);
-});
+    card.append(img,name,price,btn);
+    panel.appendChild(card);
+  });
+
+} catch (e) {
+  status.innerHTML = "❌ خطأ: " + e.message;
+}
 </script>
 
 </body>
