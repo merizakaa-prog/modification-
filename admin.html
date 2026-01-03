@@ -3,12 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <title>لوحة التحكم - إدارة الأطباق</title>
+
 <style>
-body{font-family:tahoma;background:#f3f3f3;padding:20px}
-.card{background:#fff;padding:15px;margin-bottom:15px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
-input{width:100%;padding:8px;margin:6px 0}
-img{width:80px;height:80px;border-radius:50%;border:2px solid #8b0000;cursor:pointer}
-button{width:100%;padding:10px;background:#8b0000;color:#fff;border:none;border-radius:6px;font-size:15px;cursor:pointer;margin-top:5px}
+body{
+  font-family:tahoma;
+  background:#f3f3f3;
+  padding:20px
+}
+h2{text-align:center}
+.card{
+  background:#fff;
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,.15)
+}
+input,textarea{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  font-family:tahoma
+}
+img{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  border:2px solid #8b0000;
+  cursor:pointer;
+  display:block;
+  margin-bottom:8px
+}
+button{
+  width:100%;
+  padding:10px;
+  background:#8b0000;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  font-size:15px;
+  cursor:pointer
+}
 </style>
 </head>
 <body>
@@ -16,19 +50,24 @@ button{width:100%;padding:10px;background:#8b0000;color:#fff;border:none;border-
 <h2>لوحة التحكم</h2>
 <div id="panel"></div>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// إعدادات Firebase لمشروعك
+/* 🔴 ضع بيانات مشروعك */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",  // ضع apiKey هنا
+  apiKey: "YOUR_API_KEY",
   authDomain: "restaurant-e323a.firebaseapp.com",
   projectId: "restaurant-e323a",
   storageBucket: "restaurant-e323a.appspot.com",
   messagingSenderId: "309092455734",
-  appId: "YOUR_APP_ID"     // ضع appId هنا
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -37,76 +76,68 @@ const db = getFirestore(app);
 const images = ["makla1.png","makla2.png","makla3.png"];
 const panel = document.getElementById("panel");
 
-// تحميل الأطباق من Firestore
-async function loadDishes(){
-    const querySnapshot = await getDocs(collection(db, "dishes"));
-    panel.innerHTML = "";
+/* جلب الأطباق */
+const querySnapshot = await getDocs(collection(db,"dishes"));
 
-    querySnapshot.forEach(docSnap=>{
-        const d = docSnap.data();
-        const id = docSnap.id;
+querySnapshot.forEach(docSnap=>{
+  const d = docSnap.data();
+  const id = docSnap.id;
 
-        const card = document.createElement("div");
-        card.className = "card";
+  const card = document.createElement("div");
+  card.className = "card";
 
-        const img = document.createElement("img");
-        img.src = d.image;
-        img.onclick = ()=>{
-            let i = (images.indexOf(img.src.split("/").pop()) + 1) % images.length;
-            img.src = images[i];
-        };
+  /* الصورة */
+  const img = document.createElement("img");
+  img.src = d.image;
+  img.onclick = ()=>{
+    let i = (images.indexOf(img.src.split("/").pop())+1)%images.length;
+    img.src = images[i];
+  };
 
-        const name = document.createElement("input");
-        name.value = d.name;
+  /* الاسم */
+  const name = document.createElement("input");
+  name.value = d.name;
+  name.placeholder = "اسم الطبق";
 
-        const price = document.createElement("input");
-        price.type = "number";
-        price.value = d.price;
+  /* السعر */
+  const price = document.createElement("input");
+  price.type = "number";
+  price.value = d.price;
+  price.placeholder = "السعر";
 
-        const btn = document.createElement("button");
-        btn.textContent = "حفظ التغييرات";
-        btn.onclick = async ()=>{
-            await updateDoc(doc(db,"dishes",id),{
-                name: name.value,
-                price: Number(price.value),
-                image: img.src.split("/").pop()
-            });
-            alert("تم الحفظ ✔");
-        };
+  /* الفيديو */
+  const video = document.createElement("input");
+  video.value = d.video;
+  video.placeholder = "رابط الفيديو أو vi.mp4";
 
-        card.append(img,name,price,btn);
-        panel.appendChild(card);
+  /* المكونات */
+  const ing = document.createElement("textarea");
+  ing.value = d.ingredients;
+  ing.placeholder = "المكونات";
+
+  /* الفوائد */
+  const nut = document.createElement("textarea");
+  nut.value = d.nutrition;
+  nut.placeholder = "الفوائد الغذائية";
+
+  /* زر الحفظ */
+  const btn = document.createElement("button");
+  btn.textContent = "حفظ التغييرات";
+  btn.onclick = async ()=>{
+    await updateDoc(doc(db,"dishes",id),{
+      name: name.value,
+      price: Number(price.value),
+      image: img.src.split("/").pop(),
+      video: video.value,
+      ingredients: ing.value,
+      nutrition: nut.value
     });
-}
+    alert("تم الحفظ ✔");
+  };
 
-// إنشاء أطباق افتراضية إذا كانت Collection فارغة
-async function createDefaultDishes(){
-    const querySnapshot = await getDocs(collection(db, "dishes"));
-    if(querySnapshot.empty){
-        const defaultDishes = [
-            {id:1,name:"كسكسي",price:700,image:"makla1.png"},
-            {id:2,name:"شخشوخة",price:850,image:"makla2.png"},
-            {id:3,name:"طاجين زيتون",price:600,image:"makla3.png"},
-            {id:4,name:"دوبارة",price:500,image:"makla1.png"},
-            {id:5,name:"شوربة فريك",price:400,image:"makla2.png"},
-            {id:6,name:"طاجين لحم",price:900,image:"makla3.png"},
-            {id:7,name:"رز بالدجاج",price:650,image:"makla1.png"},
-            {id:8,name:"معكرونة",price:550,image:"makla2.png"},
-            {id:9,name:"طاجين بطاطا",price:500,image:"makla3.png"},
-            {id:10,name:"كسكسي خضر",price:600,image:"makla1.png"},
-            {id:11,name:"شخشوخة لحم",price:900,image:"makla2.png"},
-            {id:12,name:"طاجين دجاج",price:750,image:"makla3.png"}
-        ];
-
-        for(const d of defaultDishes){
-            await setDoc(doc(db,"dishes",d.id.toString()),d);
-        }
-    }
-}
-
-// بدء التشغيل
-await createDefaultDishes();
-await loadDishes();
+  card.append(img,name,price,video,ing,nut,btn);
+  panel.appendChild(card);
+});
 </script>
 
 </body>
