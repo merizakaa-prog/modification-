@@ -2,64 +2,122 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>طلبات الزبائن</title>
+<title>الطلبات</title>
+
 <style>
-body {font-family:tahoma;background:#f3f3f3;margin:0;padding:15px}
-h2{text-align:center;margin-bottom:20px}
-.table {
-  width:100%;
-  border-collapse:collapse;
+body{
+  font-family:tahoma;
+  background:#f2f2f2;
+  margin:0;
+  padding:15px
+}
+
+h2{
+  text-align:center;
+  color:#8b0000
+}
+
+.box{
   background:#fff;
   border-radius:10px;
-  overflow:hidden;
-  box-shadow:0 2px 6px rgba(0,0,0,.15)
+  padding:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,.2)
 }
-.table th, .table td {
-  padding:12px;
-  text-align:center;
-  border-bottom:1px solid #ddd;
+
+.item{
+  display:flex;
+  justify-content:space-between;
+  padding:8px;
+  border-bottom:1px solid #ddd
 }
-.table th {
-  background:#8b0000;
-  color:white;
-}
-.total {
-  margin-top:15px;
+
+.item:last-child{border-bottom:none}
+
+.total{
+  margin-top:10px;
   font-size:18px;
+  color:#28a745;
   font-weight:bold;
-  text-align:right;
+  text-align:center
+}
+
+.buttons{
+  margin-top:15px;
+  display:flex;
+  gap:10px
+}
+
+button{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  font-size:14px;
+  cursor:pointer;
+  color:#fff
+}
+
+.clear{background:#8b0000}
+.back{background:#555}
+
+.empty{
+  text-align:center;
+  color:#777;
+  font-size:16px
 }
 </style>
 </head>
+
 <body>
 
-<h2>طلبات الزبائن</h2>
-<table class="table" id="ordersTable">
-  <thead>
-    <tr>
-      <th>الطبق</th>
-      <th>السعر (دج)</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-<div class="total" id="totalPrice">المجموع: 0 دج</div>
+<h2>🧾 الطلبات</h2>
+
+<div class="box" id="orders"></div>
+
+<div class="buttons">
+  <button class="clear" onclick="clearOrders()">مسح الطلبات</button>
+  <button class="back" onclick="goBack()">العودة</button>
+</div>
 
 <script>
-// جلب الطلبات من localStorage
-let orders = JSON.parse(localStorage.getItem("orders")) || [];
-const tbody = document.querySelector("#ordersTable tbody");
-const totalDiv = document.getElementById("totalPrice");
+function loadOrders(){
+  const box = document.getElementById("orders");
+  const orders = JSON.parse(localStorage.getItem("orders")) || [];
 
-let total = 0;
-orders.forEach(order => {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `<td>${order.name}</td><td>${order.price}</td>`;
-  tbody.appendChild(tr);
-  total += Number(order.price);
-});
+  box.innerHTML = "";
 
-totalDiv.textContent = `المجموع: ${total} دج`;
+  if(orders.length === 0){
+    box.innerHTML = "<p class='empty'>لا توجد طلبات</p>";
+    return;
+  }
+
+  let total = 0;
+
+  orders.forEach((o,i)=>{
+    total += Number(o.price);
+    box.innerHTML += `
+      <div class="item">
+        <span>${i+1}. ${o.name}</span>
+        <span>${o.price} دج</span>
+      </div>
+    `;
+  });
+
+  box.innerHTML += `<div class="total">المجموع: ${total} دج</div>`;
+}
+
+function clearOrders(){
+  if(confirm("هل تريد حذف كل الطلبات؟")){
+    localStorage.removeItem("orders");
+    loadOrders();
+  }
+}
+
+function goBack(){
+  window.location.href = "dishes.html";
+}
+
+loadOrders();
 </script>
 
 </body>
